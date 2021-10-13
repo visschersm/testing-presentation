@@ -1,0 +1,16 @@
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\bin\Debug\net6.0\method-hiding.exe
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\bin\Debug\net6.0\method-hiding.deps.json
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\bin\Debug\net6.0\method-hiding.runtimeconfig.json
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\bin\Debug\net6.0\method-hiding.dll
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\bin\Debug\net6.0\ref\method-hiding.dll
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\bin\Debug\net6.0\method-hiding.pdb
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.GlobalUsings.g.cs
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.csproj.AssemblyReference.cache
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.AssemblyInfoInputs.cache
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.AssemblyInfo.cs
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.csproj.CoreCompileInputs.cache
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.dll
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\ref\method-hiding.dll
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.pdb
+C:\Users\Vissc\Source\Repos\presentations\testing\method-hiding\obj\Debug\net6.0\method-hiding.genruntimeconfig.cache

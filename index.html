@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/monokai.css">
+
+    <script src="node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-transition="none">
+                <img class="r-stretch" src="content/images/unittest.png">
+            </section>
+
+            <section data-transition="none">
+                <h2>AAA-Testing</h2>
+                <p>Arrange</p>
+                <p>Act</p>
+                <p>Assert</p>
+            </section>
+
+            <section data-transition="none">
+                <h2>Naming Convention</h2>
+                <p><b>[UnitUnderTest_Senario_ExpectedResult]</b></p>
+            </section>
+
+            <section data-transition="none">
+                <h2>Test Method</h2>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class TestClass
+                    {
+                        [Test]
+                        public void UnitUnderTest_Senario_ExpectedResult()
+                        {
+                            // Arrange
+                            var classToTest = new ClassToTest();
+                        
+                            // Act
+                            var result = classToTest.MethodToTest();
+
+                            // Assert
+                            Assert.IsTrue(result);
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <h2>Coverage</h2>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="13">
+                    public class TestClass
+                    {
+                        [Test]
+                        public void UnitUnderTest_Senario_ExpectedResult()
+                        {
+                            // Arrange
+                            var classToTest = new ClassToTest();
+                        
+                            // Act
+                            var result = classToTest.MethodToTest();
+
+                            // Assert
+                            Assert.IsTrue(true);
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <img class="r-stretch" src="content/images/1-mock-as-stand-in.jpg">
+            </section>
+
+            <section data-transition="none">
+                <h2>Why do we mock?</h2>
+                <ul>
+                    <li>Costs - External API</li>
+                    <li>Availability - External Dependencies</li>
+                    <li>Performance - Internal Dependencies</li>
+                    <li>Mail Traffic</li>
+                    <li>Control</li>
+                </ul>
+            </section>
+
+            <section data-transition="none">
+                <h2>Depencency Types</h2>
+                <ul>
+                    <li>Class Dependencies</li>
+                    <li>Method Dependencies</li>
+                    <li>External Dependencies</li>
+                </ul>
+            </section>
+            <section data-transition="none">
+                <h2>Example</h2>
+                <p>What to do with dependencies?</p>
+            </section>
+            <section data-transition="none">
+                <p>Sample</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Foo
+                    {
+                        public void SomeMethod()
+                        {
+                            var service = new Service();
+
+                            var result = service.DoSomething()
+                                ?? throw new NullReferenceException();
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="5">
+                    public class Foo
+                    {
+                        public void SomeMethod()
+                        {
+                            var service = new Service();
+
+                            var result = service.DoSomething()
+                                ?? throw new NullReferenceException();
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Constructor Injection</p>
+                <pre><code class="stretch" data-trim data-noescape  data-line-numbers="3-8">
+                    public class Foo
+                    {
+                        private readonly Service service;
+
+                        public Foo(Service service)
+                        {
+                            this.service = service;
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Constructor Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="3-7">
+                    public class Foo
+                    {
+                        public void SomeMethod()
+                        {
+                            var result = service.DoSomething()
+                                ?? throw new NullReferenceException();
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="3-9">
+                    public class Bah
+                    {
+                        public void CallingMethod()
+                        {
+                            var service = new Service();
+                            Foo foo = new Foo();
+
+                            foo.SomeMethod(service);
+                        }
+                    }
+                    </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="6,8-13">
+                    public void CallingMethod()
+                    {
+                        var service = new Service();
+                        Foo foo = new Foo();
+
+                        foo.SomeMethod(service);
+                    }
+                    
+                    public void SomeMethod(Service service)
+                    {
+                        var result = service.DoSomething()
+                            ?? throw new NullReferenceException();
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Broken Constructor Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="5-6,16">
+                    public void CallingMethod()
+                    {
+                        var service = new Service();
+                        
+                        // This is now broken
+                        Foo foo = new Foo(service);
+
+                        foo.SomeMethod();
+                    }
+                    
+                    public class Foo
+                    {
+                        private readonly Service service;
+                        private readonly OtherService otherService;
+
+                        public Foo(Service service, OtherService otherService)
+                        {
+                            ...
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Broken Method Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="6-7,10">
+                    public void CallingMethod()
+                    {
+                        var service = new Service();
+                        Foo foo = new Foo();
+
+                        // This is now broken
+                        foo.SomeMethod(service);
+                    }
+                    
+                    public void SomeMethod(Service service, OtherService otherService)
+                    {
+                        var result = service.DoSomething()
+                            ?? throw new NullReferenceException();
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="3,4">
+                    public class Foo
+                    {
+                        private readonly Service service;
+                        private readonly OtherService otherService;
+
+                        public Foo(Service service, OtherService otherService)
+                        {
+                            this.service = service;
+                            this.otherService = otherService;
+                        }
+                    
+                        public void SomeMethod()
+                        {
+                            var result = service.DoSomething()
+                                ?? throw new NullReferenceException();
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="6-10">
+                    public class Foo
+                    {
+                        private readonly Service service;
+                        private readonly OtherService otherService;
+
+                        public Foo(Service service, OtherService otherService)
+                        {
+                            this.service = service;
+                            this.otherService = otherService;
+                        }
+                    
+                        public void SomeMethod()
+                        {
+                            var result = service.DoSomething()
+                                ?? throw new NullReferenceException();
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="12-16">
+                    public class Foo
+                    {
+                        private readonly Service service;
+                        private readonly OtherService otherService;
+
+                        public Foo(Service service, OtherService otherService)
+                        {
+                            this.service = service;
+                            this.otherService = otherService;
+                        }
+                    
+                        public void SomeMethod()
+                        {
+                            var result = service.DoSomething()
+                                ?? throw new NullReferenceException();
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency Injection</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                    public class Startup
+                    {
+                        public void ConfigureServices(IServiceCollection services)
+                        {
+                            services.AddScoped<Service>();
+                            services.AddScoped<OtherService>();
+                            services.AddScoped<Foo>();
+                        }
+                    }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <h2>Polymorphism</h2>
+                <img class="r-stretch" src="content/images/method-overloading-overriding-loading.png">
+            </section>
+
+            <section data-transition="none">
+                <p>Method hiding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Base
+                    {
+                        public void Method()
+                        {
+                            Console.WriteLine("Hello, World");
+                        }
+                    }
+                    
+                    public class Derived : Base
+                    {
+                        public void Method()
+                        {
+                            Console.WriteLine("Goodbye, World");
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method hiding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="11">
+                    public class Base
+                    {
+                        public void Method()
+                        {
+                            Console.WriteLine("Hello, World");
+                        }
+                    }
+                    
+                    public class Derived : Base
+                    {
+                        public void Method()
+                        {
+                            Console.WriteLine("Goodbye, World");
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method hiding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="11">
+                    public class Base
+                    {
+                        public void Method()
+                        {
+                            Console.WriteLine("Hello, World");
+                        }
+                    }
+                    
+                    public class Derived : Base
+                    {
+                        public new void Method()
+                        {
+                            Console.WriteLine("Goodbye, World");
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method hiding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    Base foo = new Base();
+                    foo.Method();
+                    
+                    Derived bah = new Derived();
+                    bah.Method();
+                    
+                    Base bar = new Derived();
+                    bar.Method();
+                </code></pre>
+            </section>
+
+            <section data-transition="none" data-markdown>
+                <textarea data-template>
+                    Method hiding Result
+                    ```
+                        Hello, World
+                        Goodbye, World
+                        Hello, World
+                    ```
+                </textarea>
+            </section>
+
+            <section data-transition="none">
+                <p>Method Overriding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Base
+                    {
+                        public virtual void Method()
+                        {
+                            Console.WriteLine("Hello, World");
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method Overriding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Derived : Base
+                    {
+                        public overwrite void Method()
+                        {
+                            Console.WriteLine("Goodbye, World");
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Method Overriding</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    Base foo = new Base();
+                    foo.Method();
+                    
+                    Derived bah = new Derived();
+                    bah.Method();
+                    
+                    Base bar = new Derived();
+                    bar.Method();
+                </code></pre>
+            </section>
+
+            <section data-transition="none" data-markdown>
+                <textarea data-template>
+                    Method Overriding Result
+                    ```
+                        Hello, World
+                        Goodbye, World
+                        Goodbye, World
+                    ```
+                </textarea>
+            </section>
+
+            <section data-transition="none">
+                <p>How is this related to testing?</p>
+            </section>
+
+            <section data-transition="none">
+                <p>Private state</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Service
+                    {
+                        private bool IsAllowed(string text, int amount)
+                        {
+                            ...
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Private state</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Service
+                    {
+                        public void DoSomething()
+                        {
+                            if(!IsAllowed("hello", 23))
+                            {
+                                throw new Exception();
+                            }
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Private state in Test</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                        [Test]
+                        public void TestMethod()
+                        {
+                            // Arrange
+                            var service = new Service();
+
+                            // Act
+                            Action act = () => service.DoSomething();
+
+                            // Assert
+                            act.Should().Throw<Exception>();
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Private state - overrulable</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="3">
+                    public class Service
+                    {
+                        protected virtual bool IsAllowed(string text, int amount)
+                        {
+                            ...
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Private state - overrulable</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class TestClass : Service
+                    {
+                        public bool IsAllowedOverride { get; set; } = false;
+                        private override IsAllowed() => IsAllowedOverride;
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Private state in Test</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers="4-7">
+                    <script type="text/template">
+                        [Test]
+                        public void TestMethod()
+                        {
+                            // Arrange
+                            var isAllowed = false;
+                            var service = new TestClass();
+                            service.IsAllowedOverride = false;
+
+                            // Act
+                            Action act = () => service.DoSomething();
+
+                            // Assert
+                            act.Should().Throw<Exception>();
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependencies</p>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency method</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                        public class Service
+                        {
+                            private readonly OtherService otherService;
+
+                            public Service(OtherService otherService)
+                            {
+                                this.otherService = otherService;
+                            }
+
+                            public void DoSomething()
+                            {
+                                if(!otherService.IsAllowed())
+                                    throw new Exception();
+
+                                ...
+                            }
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Depencency method</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                        public class TestClass
+                        {
+                            [Test]
+                            public void TestMethod()
+                            {
+                                // Arrange
+                                var otherService = new OtherService();
+                                var service = new Service(otherService);
+
+                                // Act
+                                Action act = () => service.DoSomething();
+
+                                // Assert
+                                act.Should().Throw<Exception>();
+                            }
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <h2>Introducing MOQ</h2>
+            </section>
+
+            <section data-transition="none">
+                <p>Depencency mocked</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                <script type="text/template">
+                        public class TestClass
+                        {
+                            [Test]
+                            public void TestMethod()
+                            {
+                                // Arrange
+                                var otherService = new Mock<OtherService>();
+                                otherService.Setup(x => IsAllowed).Returns(false);
+                                var service = new Service(otherService);
+
+                                // Act
+                                Action act = () => service.DoSomething();
+
+                                // Assert
+                                act.Should().Throw<Exception>();
+                            }
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>What is needed?</p>
+                <ul>
+                    <li>public virtual</li>
+                    <li>interfaces</li>
+                </ul>
+            </section>
+
+            <section data-transition="none">
+                <p>Multiple dependencies</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class Foo
+                    {
+                        public Foo(
+                            Service1 service, 
+                            Service2 service2, 
+                            ServiceN serviceN)
+                        {
+                            ...
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency hell</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                        [Test]
+                        public void TestMethod1()
+                        {
+                            var service1 = new Mock<Service1>();
+                            var service2 = new Mock<Service2>();
+                            var service3 = new Mock<ServiceN>();
+                            
+                            var foo = new Foo(service1.Object, service2.Object, serviceN.Object);
+
+                            ...
+                        }
+
+                        [Test]
+                        public void TestMethod2()
+                        {
+                            var service1 = new Mock<Service1>();
+                            var service2 = new Mock<Service2>();
+                            var service3 = new Mock<ServiceN>();
+                            
+                            var foo = new Foo(service1.Object, service2.Object, serviceN.Object);
+
+                            ...
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <p>Dependency Setup</p>
+                    <script type="text/template">
+                        public class TestClass
+                        {
+                            private Mock<Service1> service1;
+                            private Mock<Service2> service2;
+                            private Mock<ServiceN> serviceN;
+
+                            [SetUp]
+                            public void Setup()
+                            {
+                                service1 = new Mock<Service1>();
+                                service2 = new Mock<Service2>();
+                                service3 = new Mock<ServiceN>();
+                            }
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <p>Dependency hell - Creation</p>
+                    <script type="text/template">
+                        public class TestClass
+                        {
+                            [Test]
+                            public void Testmethod()
+                            {
+                                // Arrange
+                                var foo = new Foo(service1.Object, service2.Object, serviceN.Object);
+
+                                // Act
+                                var result = foo.DoSomething();
+
+                                // Assert
+                                Assert.IsTrue(result);
+                            }
+                        }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency factory</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                    public static class FooFactory
+                    {
+                        public Mock<Service1> service1 { get; set; } = new Mock<Service1>();
+                        public Mock<Service2> service2 { get; set; } = new Mock<Service2>();
+                        public Mock<ServiceN> serviceN { get; set; } = new Mock<ServiceN>();
+                    }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency factory</p>
+                <pre><code data-trim data-noescape data-line-numbers>
+                    public static class FooFactory
+                    {
+                        ... 
+
+                        public static Foo Create()
+                        {
+                            return new Foo(service1.Object, service2.Object, serviceN.Object);
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Dependency factory</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    public class TestClass
+                    {
+                        [Test]
+                        public void TestMethod()
+                        {
+                            FooFactory.Service1.Setup(...).Returns(...);
+                            var foo = FooFactory.Create();
+
+                            var result = foo.MethodUnderTest();
+                            
+                            Assert.IsTrue(result);
+                        }
+                    }
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>So what is Matr Test?</p>
+                <a href="https://www.nuget.org/packages/MatrTech.Utilities.Test">Matr.Utilities.Test</a>
+            </section>
+
+            <section data-transition="none">
+                <p>Matr Setup</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                    public class TestClass : TestBase
+                    {
+                        [SetUp]
+                        public void Setup()
+                        {
+                            var service1 = new Mock<Service1>();
+                            factory.RegisterOrReplace(service1.Object);
+                        }
+                    }
+                    </script>
+                </code></pre>
+            </section>
+
+            <section data-transition="none">
+                <p>Matr usage</p>
+                <pre><code class="stretch" data-trim data-noescape data-line-numbers>
+                    <script type="text/template">
+                    public class TestClass : TestBase
+                    {
+                        [Test]
+                        public void Testmethod()
+                        {
+                            var foo = factory.Create<Foo>();
+                            
+                            var result = foo.MethodUnderTest();
+
+                            Assert.IsTrue(result);
+                        }
+                    }
+                    </script>
+                </code></pre>
+            </section>
+        </div>
+
+        <script>
+            Reveal.initialize({
+                plugins: [RevealHighlight, RevealMarkdown]
+            });
+        </script>
+</body>
+
+</html>
